@@ -4,27 +4,43 @@ const port = 4200;
 
 app.use(express.json());
 
-const generateRandomString = () => Math.random().toString(36).substring(2, 15);
+const subscriptionIdRandom = () => Math.floor(Math.random() * 10000);
+const orderIdRandom = () => Math.floor(Math.random() * 10000);
+
+let lastRequestTimestamp = 0;
 
 app.post("/process-order", (req, res) => {
   const {
     previousOrderId,
-    shippingId,
+    shippingID,
     ipAddress,
     campaignId,
     offers,
     forceGatewayId,
   } = req.body;
-  const authHeader = req.headers.authorization;
 
+  console.log("req,Kkkkkkkkkk", req.body);
+  console.log("shippingId == 8", shippingID === 8, typeof(shippingID));
+  const authHeader = req.headers.authorization;
+  const currentTimestamp = Date.now();
+  console.log(">>>>>>>>>>>", currentTimestamp);
+  
+  if (currentTimestamp - lastRequestTimestamp < 2000) {
+    return res.status(429).json({ error: "Too Many Requests" });
+  }
+  
+  lastRequestTimestamp = currentTimestamp;
+  console.log(">>>>2222222222>>>>>>>", lastRequestTimestamp);
+  
   if (authHeader === "Basic 1392309290") {
-    if (shippingId === "8") {
-      const subscriptionId = generateRandomString();
+    if (shippingID === 8) {
+      console.log("shippingId == 8", shippingID === 8);
+      const subscriptionId = subscriptionIdRandom() ;
       const response = {
         gateway_id: "1",
         response_code: "100",
         error_found: "0",
-        order_id: generateRandomString(),
+        order_id: orderIdRandom(),
         transactionID: "Not Available",
         customerId: "766198",
         authId: "Not Available",
@@ -34,9 +50,9 @@ app.post("/process-order", (req, res) => {
         test: "1",
         prepaid_match: "0",
         line_items: offers.map((offer) => ({
-          product_id: offer.product_id.toString(),
+          product_id: offer.product_id,
           variant_id: "0",
-          quantity: offer.quantity.toString(),
+          quantity: offer.quantity,
           subscription_id: subscriptionId,
         })),
         subscription_id: offers.reduce((acc, offer) => {
@@ -74,7 +90,6 @@ app.post("/process-upsell", (req, res) => {
     res.status(401).json({ error: "Unauthorized" });
   }
 });
-
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
