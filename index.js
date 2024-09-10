@@ -91,6 +91,20 @@ app.post("/process-upsell", (req, res) => {
   }
 });
 
+app.post("/auth", (req, res) => {
+  const { Authorization } = req.headers
+  const decodedAuth = Buffer.from(Authorization, "base64").toString("utf-8")
+  const [username,password] = decodedAuth.split(" ")
+  if (username,password) {
+    // Return the same payload
+    res.status(200).json({
+     message: "Authorized"
+    })
+  } else {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
