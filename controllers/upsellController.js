@@ -1,4 +1,4 @@
-const decodeAuth = require("./authController").decodeAuth;
+const { decodeAuth } = require("../utils");
 
 exports.processUpsell = (req, res) => {
   const { authorization } = req.headers;

@@ -1,12 +1,4 @@
-const decodeAuth = (authorization) => {
-  const decodedAuth = Buffer.from(
-    authorization.split(" ")[1],
-    "base64"
-  ).toString("utf-8");
-  const [username, password] = decodedAuth.split(" ");
-  return { username, password };
-};
-
+const { decodeAuth } = require("../utils");
 exports.authenticate = (req, res) => {
   const { authorization } = req.headers;
   const { username, password } = decodeAuth(authorization);

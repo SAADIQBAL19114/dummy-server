@@ -1,4 +1,4 @@
-const decodeAuth = require("./authController").decodeAuth;
+const { decodeAuth } = require("../utils");
 
 let lastRequestTimestamp = 0;
 const subscriptionIdRandom = () => Math.floor(Math.random() * 10000);
@@ -16,6 +16,7 @@ exports.processOrder = (req, res) => {
 
   const { authorization } = req.headers;
   const { username, password } = decodeAuth(authorization);
+  console.log("username, password ", username, password);
   const currentTimestamp = Date.now();
 
   if (currentTimestamp - lastRequestTimestamp < 2000) {
